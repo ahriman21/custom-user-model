@@ -1,0 +1,21 @@
+1- to login by phone number we must create a Custom ModelBackend like this code below :
+   >> class MobileBackend(ModelBackend):
+         def authenticate(self,reqeust,username=None,password=None,**kwargs):
+            phone = kwargs['phone']
+            try:
+                 user = User.objects.get(phone=phone)
+            expect User.DoesNotExist:
+                 pass
+                 
+                 
+                 
+2- then pass the custom ModelBackend to 'backend' filed in your custom user model like this :
+   >> backend = 'account.custom_model_backend.MobileBackend' # --> 'Your_App_Name.Your_Module_Name.Your_Model_Backend_Name'
+   
+   
+   
+3- pick the code below and put it in your project settings.py file like this :
+   >> AUTHENTICATION_BACKENDS = [
+      'django.contrib.auth.backends.ModelBackend',
+      'account.custom_model_backend.MobileBackend' # --> 'Your_App_Name.Your_Module_Name.Your_Model_Backend_Name'
+      ]
