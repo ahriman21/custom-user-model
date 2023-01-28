@@ -12,7 +12,7 @@ class UserManager(BaseUserManager):
             raise ValueError('گذرواژه دست کم باید 4 کاراکتر باشد')
 
         user = self.model(full_name=full_name,
-                        email=email,
+                        email=self.normaliza_email(email),
                         phone=phone,
                         city=city,
                         address=address)
