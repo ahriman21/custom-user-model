@@ -65,6 +65,19 @@ def send_otp(mobile,otp):
        print(e)
    except HTTPException as e: 
        print(e)
+       
+def is_otp_expired(phone):
+   try:
+      user = User.objects.get(phone=phone)
+      user_otp_date = user.otp_create_date
+      now = datetime.datetime.now
+      diff = now - user_otp_date
+      if diff.seconds > 60:
+         return False
+      return True
+   expect User.DoesNotExist:
+      return ValueError('404')
+   
 
 
 
