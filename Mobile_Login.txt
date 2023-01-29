@@ -1,3 +1,4 @@
+#my_backend.py
 1- to login by phone number we must create a Custom ModelBackend like this code below :
    >> class MobileBackend(ModelBackend):
          def authenticate(self,reqeust,username=None,password=None,**kwargs):
@@ -8,12 +9,12 @@
                  pass
                  
                  
-                 
+#models.py              
 2- then pass the custom ModelBackend to 'backend' filed in your custom user model like this :
    >> backend = 'account.custom_model_backend.MobileBackend' # --> 'Your_App_Name.Your_Module_Name.Your_Model_Backend_Name'
    
   
-   
+#settings.py
 3- pick the code below and put it in your project settings.py file like this and set USE_TZ to False and set TIME_ZONE to 'Asia/Tehran'   :
    >> AUTHENTICATION_BACKENDS = [
       'django.contrib.auth.backends.ModelBackend',
@@ -24,7 +25,86 @@
       USE_TZ = False
 
 
-
+#models.py
 4- you have to initalize a 'otp_code' and 'otp_create_date' filed in your custom user model like this :
    otp_code = models.PositiveIntegerField
    otp_create_date = models.DateTimeField(auto_now=True)
+   is_active = models.BooleanField(default = False)
+
+
+#forms.py
+5- create a form that only takes mobile phone :
+
+class MobileAuthForm(forms.Form):
+   phone = forms.CharField()
+   
+class GetOtpForm(forms.Form):
+   otp_code = forms.CharField()
+
+            
+            
+# my_utils.py            
+6- send otp function and create otp function :
+from kavenegar import *
+from random import randint 
+
+def random_otp():
+   return randint(1000,9999)
+ 
+def send_otp(mobile,otp):
+   try:
+       api = KavenegarAPI('Your APIKey')
+       params = {
+           'sender': '',      #optional
+           'receptor': mobile,    #multiple mobile number, split by comma
+           'message': f'your code is {otp}',
+       } 
+       response = api.sms_send(params)
+       print(response)
+   except APIException as e: 
+       print(e)
+   except HTTPException as e: 
+       print(e)
+
+
+
+
+#views.py
+7- create a view to handle registering users and loging in users :
+
+class MobileAuthView(View):
+   def get(self,request):
+      context = { 'form' : MobileAuthForm() }
+      return render(request,'register.html',context)
+   def post(self,request):
+      form = MobileAuthForm(request.POST)
+      phone = form.cleaned_data.get('phone')
+      try:
+         user = User.objects.get(phone=phone)
+         # todo :create and send otp to user and save otp_code in user's record .
+         request.session['user_phone'] = user.phone
+         return redirect(account:verify)
+         
+      expect User.DoesNotExist:
+         if form.is_valid():
+            User.objects.create_user(phone=phone)
+            # todo : create and send otp to suer and save otp_code in user's record.
+            request.session['user_phone'] = user.phone
+            return redirect(account:verify)
+            
+            
+class VerifyUserView(View):
+   def get(self,request):
+      context = { 'form' : GetOtpForm() }
+      return render(request,'register.html',context)
+   def post(self,request):
+      phone = reqeust.session['user_phone']
+      form = GetOtpForm(request.POST)
+      entered_otp = form.cleaned_data.get('otp_code)
+      if User.objects.filter(phone=phone,otp_code=entered_otp).exists():
+         if form.is_valid():
+            user = User.objects.get(phone=phone,otp_code=otp_code)
+            user.is_active=True
+            return redirect('home')
+      context= {'form':GetOtpForm()} 
+      return render(request,'verify.html',context)
