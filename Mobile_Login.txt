@@ -12,10 +12,19 @@
 2- then pass the custom ModelBackend to 'backend' filed in your custom user model like this :
    >> backend = 'account.custom_model_backend.MobileBackend' # --> 'Your_App_Name.Your_Module_Name.Your_Model_Backend_Name'
    
+  
    
-   
-3- pick the code below and put it in your project settings.py file like this :
+3- pick the code below and put it in your project settings.py file like this and set USE_TZ to False and set TIME_ZONE to 'Asia/Tehran'   :
    >> AUTHENTICATION_BACKENDS = [
       'django.contrib.auth.backends.ModelBackend',
       'account.custom_model_backend.MobileBackend' # --> 'Your_App_Name.Your_Module_Name.Your_Model_Backend_Name'
       ]
+      
+      TIME_ZONE = 'Asia/Tehran'
+      USE_TZ = False
+
+
+
+4- you have to initalize a 'otp_code' and 'otp_create_date' filed in your custom user model like this :
+   otp_code = models.PositiveIntegerField
+   otp_create_date = models.DateTimeField(auto_now=True)
