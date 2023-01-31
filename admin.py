@@ -1,14 +1,14 @@
 from django.contrib import admin 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User
-from . import forms
 from django.contrib.auth.models import Group
-
+from . import admin_forms
 # Register your models here.
 
 
 class UserAdmin(BaseUserAdmin):
-    
+    form = admin_forms.UserChangeForm  # optional
+    add_form = admin_forms.UserCreationForm  # optional
 
     list_display = ('email','phone','_role')
     list_filter = ('is_superuser','_role')
