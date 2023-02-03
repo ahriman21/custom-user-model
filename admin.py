@@ -1,12 +1,12 @@
 from django.contrib import admin 
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.admin import UserAdmin
 from .models import User
 from django.contrib.auth.models import Group
 from . import admin_forms
 # Register your models here.
 
 
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(UserAdmin):
     form = admin_forms.UserChangeForm  # optional
     add_form = admin_forms.UserCreationForm  # optional
 
