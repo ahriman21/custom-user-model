@@ -7,9 +7,6 @@ from . import admin_forms
 
 
 class UserAdmin(UserAdmin):
-    form = admin_forms.UserChangeForm  # optional
-    add_form = admin_forms.UserCreationForm  # optional
-
     list_display = ('email','phone','_role')
     list_filter = ('is_superuser','_role')
     search_fields = ('email',)
